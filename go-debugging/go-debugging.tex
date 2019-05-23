@@ -1,0 +1,210 @@
+\documentclass[pdf,xcolor=dvipsnames]{beamer}
+\mode<presentation>{\usetheme{Warsaw}}
+
+% packages
+\usepackage{listings}
+% \usepackage{upquote}
+
+\lstset{numbers=left, numberstyle=\footnotesize, stepnumber=1,firstnumber=1,
+    numbersep=5pt,
+    stringstyle=5pt,
+    basicstyle=\footnotesize,
+    keepspaces=true, tabsize=4,
+    showstringspaces=false,
+    backgroundcolor=\color{SpringGreen}
+}
+
+% preamble
+\title{Debugging Go inside Docker containers}
+\author{Wojciech Gac}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Outline}
+  \pause
+  \begin{itemize}
+  \item The Problem
+    \pause
+  \item Delve Debugger
+    \pause
+  \item Container Preparation
+    \pause
+  \item Debugging
+    \pause
+  \item Further Reading
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Problem}
+  We'd like to be able to do the following:
+  \pause{}
+  \begin{itemize}
+  \item Using a local instance of VSCode...
+    \pause{}
+  \item ...and a dockerized instance of a Go application...
+    \pause{}
+  \item ...connect to a running process \emph{inside} the container...
+    \pause{}
+  \item ...interrupt execution with breakpoints and modify variables on the fly
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Delve Debugger}
+  \textbf{Delve} (dlv) is the primary debugger for Go, similar in
+  spirit to \textbf{GDB}. It has the following main features:
+  \pause{}
+  \begin{itemize}
+  \item Setting and managing of breakpoints and checkpoints
+    \pause{}
+  \item Code walking - stepping into and over functions, instruction-level stepping
+    \pause{}
+  \item Goroutine and thread debugging
+    \pause{}
+  \item Tracing
+    \pause{}
+  \item Type introspection
+    \pause{}
+  \item ...and more (but no function calls yet)
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Delve Debugger}
+  Standalone usage basics:
+  \pause{}
+  \begin{itemize}
+  \item Installation
+\begin{verbatim}
+$ go get -u github.com/go-delve/delve/cmd/dlv
+\end{verbatim}
+    \pause{}
+  \item Debugging binaries (starting at \emph{main()})
+\begin{verbatim}
+$ dlv debug path/to/binary
+\end{verbatim}
+    \pause{}
+  \item Debugging package tests
+\begin{verbatim}
+$ dlv test path/to/directory/containing/tests
+\end{verbatim}
+    \pause{}
+  \end{itemize}
+  Once dropped into Delve's command line, you can set breakpoints, inspect source code and eventually run \emph{continue}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Container Preparation}
+  Sample application (file: \emph{tutorial/tutorial.go}):
+  \pause{}
+\begin{lstlisting}
+package main
+
+import (
+	"fmt"
+	"log"
+	"net/http"
+)
+
+func main() {
+	http.HandleFunc("/", func(w http.ResponseWriter,
+                             r *http.Request) {
+		nr := 1
+		msg := `Hello World`
+		w.Write([]byte(fmt.Sprintf(
+                        "Message: \"%s\" Number: %d", 
+                        msg, nr)))
+	})
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Container Preparation}
+  Dockerfile:
+\begin{lstlisting}[]
+FROM golang:1.11.10-alpine3.8
+ENV CGO_ENABLED 0
+ENV GOPATH /opt/go:$GOPATH
+ENV PATH /opt/go/bin:$PATH
+ADD . /opt/go/src/tutorial
+WORKDIR /opt/go/src/tutorial
+ 
+RUN apk add --no-cache git
+RUN go get github.com/derekparker/delve/cmd/dlv
+RUN go build -o tutorial tutorial.go
+CMD ["./tutorial"]
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,fragile]
+  \frametitle{Container Preparation}
+  docker-compose.yaml
+\begin{lstlisting}
+version: '2'
+services:
+  tutorial:
+    build: .
+    security_opt:
+      - seccomp:unconfined
+    entrypoint: >
+          dlv debug tutorial -l :40000 
+          --headless=true --api-version=2 --log=true
+    ports:
+      - "8080:8080"
+      - "40000:40000"
+    expose:
+      - "8080"
+      - "40000"
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Container Preparation}
+  VSCode configuration (file: \emph{launch.json}):
+\begin{lstlisting}[]
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Remote Docker",
+            "type": "go",
+            "request": "launch",
+            "mode": "remote",
+            "remotePath": "/opt/go/src/tutorial",
+            "port": 40000,
+            "host": "172.19.0.2",
+            "program": "${workspaceRoot}",
+            "env": {},
+            "args": []
+        }
+    ]
+}
+\end{lstlisting}
+\end{frame}
+
+% Test
+% \begin{frame}{Timing example}
+%   \begin{table}[bt]
+%     \begin{tabular}{|c|c|c|}
+%     % \centering
+%     \hline
+%   \uncover<3-5,7-9>{1} & \uncover<4-6,8-10>{2} & \uncover<5-7,9-11>{3} \\
+%     \hline
+%   \uncover<2-4,6-8>{4} & \uncover<9-11,13-15>{5} & \uncover<6-8,10-12>{6} \\
+%     \hline
+%   \uncover<1-3,5-7>{7} & \uncover<8-10,12-14>{8} & \uncover<7-9,11-13>{9} \\
+%     \hline
+%     \end{tabular}
+%   \end{table}
+% \end{frame}
+
+\end{document}
