@@ -1,0 +1,402 @@
+\documentclass[pdf]{beamer}
+\mode<presentation>{\usetheme{Warsaw}}
+
+% packages
+\usepackage{listings}
+% \usepackage{upquote}
+
+% preamble
+\title{Introduction to Lisp Programming with Clojure}
+\author{Wojciech Gac}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Outline}
+  \pause
+  \begin{itemize}
+  \item What is Lisp?
+    \pause
+  \item History
+    \pause
+  \item Clojure Basics
+    \pause
+  \item Tooling
+    \pause
+  \item Advanced Topics
+    \pause
+  \item Where to Go Next?
+  \end{itemize}
+\end{frame}
+
+% What is Lisp?
+\begin{frame}{What is Lisp?}
+  \pause
+  \begin{itemize}
+  \item Grew out of a purely mathematical idea of John McCarthy
+    \pause
+  \item Another way to describe universal computation (equivalent to Turing Machines, Lambda Calculus, Cellular Automata, etc.)
+    \pause
+  \item Syntax \& Data are the same (homoiconicity)
+    \pause
+  \item Programs typically run as live memory images
+    \pause
+  \item Macros allow code generation (programs writing programs, writing programs...)
+    \pause
+  \item Supports many programming paradigms (OOP, Aspect, Logical, Imperative, Symbolic), but is fundamentally functional
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{What is Lisp?}
+  Types of Lisp:
+  \pause
+  \begin{itemize}
+  \item Lisp-1 (single namespace)
+    \pause
+  \item Lisp-2 (separate namespaces for variables and functions)
+    \pause
+  \item Lisp-like languages
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{What is Lisp?}
+  Lisp-1 examples:
+  \pause
+  \begin{itemize}
+  \item Scheme
+    \pause
+  \item Clojure
+    \pause
+  \item Arc
+    \pause
+  \item PicoLisp
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{What is Lisp?}
+  Lisp-2 examples:
+  \pause
+  \begin{itemize}
+  \item Common Lisp
+    \pause
+  \item Emacs Lisp
+    \pause
+  \item AutoLisp
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{What is Lisp?}
+  Lisp-like examples:
+  \pause
+  \begin{itemize}
+  \item LFE (Lisp-Flavored Erlang)
+    \pause
+  \item Nu (Scripting language for OS X)
+    \pause
+  \item Hy (Lisp-like Python)
+    \pause
+  \item Liskell (Lisp syntax for Haskell)
+    \pause
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{What is Lisp?}
+  Scheme:
+  \pause
+  \begin{itemize}
+  \item Lisp-1 (shared namespace for variables and functions)
+    \pause
+  \item Proved that lexical scope can be efficient
+    \pause
+  \item Pure functional style preferred, but not enforced
+    \pause
+  \item Support for continuations
+    \pause
+  \item Some better-known implementations:
+    \pause
+    \begin{itemize}
+    \item GNU Guile
+      \pause
+    \item Racket
+      \pause
+    \item Chez Scheme
+      \pause
+    \item Bigloo
+      \pause
+    \item Chicken Scheme
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{What is Lisp?}
+  Common Lisp:
+  \pause
+  \begin{itemize}
+  \item Lisp-2 (separate namespaces for variables and functions)
+    \pause
+  \item Mature, industrial-strength dialect designed in 1980s
+    \pause
+  \item CLOS - powerful object system based on generic functions
+    \pause
+  \item Meta-Object Protocol - entrypoint for full CLOS customization
+    \pause
+  \item Not too restrictive about side-effects
+    \pause
+  \item Some implementations:
+    \pause
+    \begin{itemize}
+    \item Allegro Common Lisp (commercial)
+      \pause
+    \item LispWorks (commercial)
+      \pause
+    \item SBCL
+      \pause
+    \item CLISP
+      \pause
+    \item Clozure CL
+      \pause
+    \item Armed Bear Common Lisp (runs on JVM)
+      \pause
+    \item Movitz (defunct bare-metal subset of CL)
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{What is Lisp?}
+  Clojure:
+  \pause
+  \begin{itemize}
+  \item Lisp-1
+    \pause
+  \item Runs on JVM (also on .NET CLR)
+    \pause
+  \item Strong Java interoperability layer
+    \pause
+  \item Seamless integration with Java code (via JAR)
+  \end{itemize}
+\end{frame}
+
+% History
+\begin{frame}{History}
+  Timeline:
+  \pause
+  \begin{itemize}
+  \item 1958 - John McCarthy published the original paper
+    \pause
+  \item 1962 - First Lisp compiler written at MIT
+    \pause
+  \item 1965 - Maclisp created at MIT AI Lab
+    \pause
+  \item 1968 - Interlisp created at BBN/Xerox
+    \pause
+  \item 1973 - First Lisp Machine created
+    \pause
+  \item 1975 - Scheme invented by Steele \& Sussman
+    \pause
+  \item 1980 - Symbolics \& LMI market Lisp Machines
+    \pause
+  \item 1984 - Common Lisp first appeared
+    \pause
+  \item 1985 - Emacs Lisp at the core of GNU Emacs
+    \pause
+  \item 2007 - Rich Hickey created Clojure
+  \end{itemize}
+\end{frame}
+
+% Clojure Basics
+\begin{frame}{Clojure Basics}
+  Data types:
+  \pause
+  \begin{itemize}
+  \item Numbers (integers, reals, bigint, bigdec, rationals)
+    \pause
+  \item Chars e.g. \lstinline{\\a, \\?}
+    \pause
+  \item Strings
+    \pause
+  \item Symbols e.g. \lstinline{test, lol, hi-there}
+    \pause
+  \item Boolean values: \lstinline{true, false}
+    \pause
+  \item Non-value: \lstinline{nil}
+  \end{itemize}
+\end{frame}
+
+% Tooling
+\begin{frame}{Tooling}
+  \begin{itemize}
+    \pause
+  \item Leiningen (\textit{leiningen.org})
+    \pause
+  \item GNU Emacs/CIDER (\textit{cider.readthedocs.io})
+    \pause
+  \item IntelliJ/Cursive (\textit{cursive-ide.com})
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Leiningen Walkthrough}
+  \begin{itemize}
+    \pause
+  \item Create new project
+\begin{verbatim}
+$ lein new app my-tutorial-app
+\end{verbatim}
+  \end{itemize}
+  
+\end{frame}
+
+% Examples
+
+\begin{frame}[fragile]{Examples}
+  Tail recursion (JVM does not support tail-call optimization):
+  \pause
+\begin{verbatim}
+(defn factorial
+  "Tail-recursive implementation of factorial"
+  [n]
+  (loop [n n
+         acc 1]
+    (if (zero? n)
+      acc
+      (recur (dec n) (*' n acc)))))
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Examples}
+  Mapping anonymous function to two sequences and reducing the result with addition:
+  \pause
+\begin{verbatim}
+(let [a (range 1 6)
+      b (range 13 18)]
+  (reduce + 1000000 (map #(+ (* 1000 %1) (* 10 %2)) a b)))
+\end{verbatim}
+  \pause
+\begin{verbatim}
+=> 1015750
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Examples}
+  Threading operator:
+  \pause
+\begin{verbatim}
+(->>
+ (range 10)
+ (map inc)
+ (partition 3)
+ (map #(reduce + %)))
+\end{verbatim}
+  \pause
+\begin{verbatim}
+=> (6 15 24)
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Examples}
+  Matrix transposition:
+  \pause
+\begin{verbatim}
+(defn transpose
+  "Transpose matrix by selecting corresponding elements from rows"
+  [matrix]
+  (apply map list matrix))
+\end{verbatim}
+  \pause
+\begin{verbatim}
+=> ((1 4 7) (2 5 8) (3 6 9))
+\end{verbatim}
+\end{frame}
+
+% Advanced Topics
+\begin{frame}{Advanced Topics}
+  \begin{itemize}
+  \item Macros
+    \pause
+  \item core.async
+    \pause
+  \item Integrating Clojure with Java
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Macros}
+  Anaphoric macros - contain local bindings for later use inside the macro body\\
+  \pause
+  Anaphoric if:
+  \pause
+\begin{verbatim}
+(defmacro aif
+  [condition-var condition when-true when-false]
+  `(let [~condition-var ~condition]
+     (if ~condition-var ~when-true ~when-false)))
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Macros}
+  Anaphoric when:
+  \pause
+\begin{verbatim}
+(defmacro awhen
+  [condition-var condition & body]
+  `(let [~condition-var ~condition]
+     (when ~condition-var ~@body)))
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Macros}
+  Verbose variable definition:
+  \pause
+\begin{verbatim}
+(defmacro verbose-def
+  [var val]
+  (println "Defining variable " var " with value " val)
+  `(def ~var ~val))
+\end{verbatim}
+\end{frame}
+
+% Where to Go Next?
+\begin{frame}{Where to Go Next?}
+  \pause
+  \begin{itemize}
+  \item Books:
+    \pause
+    \begin{itemize}
+    \item \textit{Clojure for the Brave and True} \\ - {\scriptsize \textsc{braveclojure.com}}
+      \pause
+    \item \textit{Practical Clojure} \\ - {\scriptsize \textsc{apress.com/us/book/9781430272311}}
+      \pause
+    \item \textit{Living Clojure} \\ - {\scriptsize \textsc{shop.oreilly.com/product/0636920034292.do}}
+      \pause
+    \item \textit{Structure and Interpretation of Computer Programs/SICP} \\ - {\scriptsize \textsc{sicpebook.wordpress.com/ebook/}}
+    \end{itemize}
+    \pause
+  \item Tutorials:
+    \pause
+    \begin{itemize}
+    \item \textit{Introduction to Clojure} \\ - {\scriptsize \textsc{clojure-doc.org/articles/tutorials/introduction.html}}
+      \pause
+    \item \textit{Clojure Koans} \\ - {\scriptsize \textsc{clojurekoans.com}}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+% Test
+% \begin{frame}{Timing example}
+%   \begin{table}[bt]
+%     \begin{tabular}{|c|c|c|}
+%     % \centering
+%     \hline
+%   \uncover<3-5,7-9>{1} & \uncover<4-6,8-10>{2} & \uncover<5-7,9-11>{3} \\
+%     \hline
+%   \uncover<2-4,6-8>{4} & \uncover<9-11,13-15>{5} & \uncover<6-8,10-12>{6} \\
+%     \hline
+%   \uncover<1-3,5-7>{7} & \uncover<8-10,12-14>{8} & \uncover<7-9,11-13>{9} \\
+%     \hline
+%     \end{tabular}
+%   \end{table}
+% \end{frame}
+
+\end{document}

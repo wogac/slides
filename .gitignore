@@ -1,0 +1,10 @@
+*~
+
+# LaTeX
+*.log
+*.nav
+*.out
+*.snm
+*.vrb
+*.aux
+*.toc
