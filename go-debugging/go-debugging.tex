@@ -17,94 +17,95 @@
 % preamble
 \title{Debugging Go inside Docker containers}
 \author{Wojciech Gac}
+\date{May 30, 2019}
 
 \begin{document}
 
 \begin{frame}
-  \titlepage
+	\titlepage
 \end{frame}
 
 \begin{frame}{Outline}
-  \pause
-  \begin{itemize}
-  \item The Problem
-    \pause
-  \item Delve Debugger
-    \pause
-  \item Container Preparation
-    \pause
-  \item Debugging
-    \pause
-  \item Further Reading
-  \end{itemize}
+	\pause
+	\begin{itemize}
+		\item The Problem
+		      \pause
+		\item Delve Debugger
+		      \pause
+		\item Container Preparation
+		      \pause
+		\item Debugging
+		      \pause
+		\item Further Reading
+	\end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{The Problem}
-  We'd like to be able to do the following:
-  \pause
-  \begin{itemize}
-  \item Using a local instance of VSCode...
-    \pause
-  \item ...and a dockerized instance of a Go application...
-    \pause
-  \item ...connect to a running process \emph{inside} the container...
-    \pause
-  \item ...interrupt execution with breakpoints and modify variables on the fly
-  \end{itemize}
-  
+	\frametitle{The Problem}
+	We'd like to be able to do the following:
+	\pause
+	\begin{itemize}
+		\item Using a local instance of VSCode...
+		      \pause
+		\item ...and a dockerized instance of a Go application...
+		      \pause
+		\item ...connect to a running process \emph{inside} the container...
+		      \pause
+		\item ...interrupt execution with breakpoints and modify variables on the fly
+	\end{itemize}
+	  
 \end{frame}
 
 \begin{frame}
-  \frametitle{Delve Debugger}
-  \textbf{Delve} (dlv) is the primary debugger for Go, similar in
-  spirit to \textbf{GDB}. It has the following main features:
-  \pause
-  \begin{itemize}
-  \item Setting and managing of breakpoints and checkpoints
-    \pause
-  \item Code walking - stepping into and over functions, instruction-level stepping
-    \pause
-  \item Goroutine and thread debugging
-    \pause
-  \item Tracing
-    \pause
-  \item Type introspection
-    \pause
-  \item ...and more (but no function calls yet)
-  \end{itemize}
-  
+	\frametitle{Delve Debugger}
+	\textbf{Delve} (dlv) is the primary debugger for Go, similar in
+	spirit to \textbf{GDB}. It has the following main features:
+	\pause
+	\begin{itemize}
+		\item Setting and managing of breakpoints and checkpoints
+		      \pause
+		\item Code walking - stepping into and over functions, instruction-level stepping
+		      \pause
+		\item Goroutine and thread debugging
+		      \pause
+		\item Tracing
+		      \pause
+		\item Type introspection
+		      \pause
+		\item ...and more (but no function calls yet)
+	\end{itemize}
+	  
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{Delve Debugger}
-  Standalone usage basics:
-  \pause
-  \begin{itemize}
-  \item Installation
-\begin{verbatim}
+	\frametitle{Delve Debugger}
+	Standalone usage basics:
+	\pause
+	\begin{itemize}
+		\item Installation
+		      \begin{verbatim}
 $ go get -u github.com/go-delve/delve/cmd/dlv
-\end{verbatim}
-    \pause
-  \item Debugging binaries (starting at \emph{main()})
-\begin{verbatim}
+		\end{verbatim}
+		\pause
+		\item Debugging binaries (starting at \emph{main()})
+		      \begin{verbatim}
 $ dlv debug path/to/binary
-\end{verbatim}
-    \pause
-  \item Debugging package tests
-\begin{verbatim}
+		\end{verbatim}
+		\pause
+		\item Debugging package tests
+		      \begin{verbatim}
 $ dlv test path/to/directory/containing/tests
-\end{verbatim}
-    \pause
-  \end{itemize}
-  Once dropped into Delve's command line, you can set breakpoints, inspect source code and eventually run \emph{continue}
+		\end{verbatim}
+		\pause
+	\end{itemize}
+	Once dropped into Delve's command line, you can set breakpoints, inspect source code and eventually run \emph{continue}
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{Container Preparation}
-  Sample application (file: \emph{tutorial/tutorial.go}):
-  \pause
-\begin{lstlisting}
+	\frametitle{Container Preparation}
+	Sample application (file: \emph{tutorial/tutorial.go}):
+	\pause
+	\begin{lstlisting}
 package main
 
 import (
@@ -124,13 +125,13 @@ func main() {
 	})
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
-\end{lstlisting}
+	\end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{Container Preparation}
-  Dockerfile:
-\begin{lstlisting}[]
+	\frametitle{Container Preparation}
+	Dockerfile:
+	\begin{lstlisting}[]
 FROM golang:1.11.10-alpine3.8
 ENV CGO_ENABLED 0
 ENV GOPATH /opt/go:$GOPATH
@@ -142,13 +143,13 @@ RUN apk add --no-cache git
 RUN go get github.com/derekparker/delve/cmd/dlv
 RUN go build -o tutorial tutorial.go
 CMD ["./tutorial"]
-\end{lstlisting}
+	\end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{Container Preparation}
-  docker-compose.yaml
-\begin{lstlisting}
+	\frametitle{Container Preparation}
+	docker-compose.yaml
+	\begin{lstlisting}
 version: '2'
 services:
   tutorial:
@@ -164,13 +165,13 @@ services:
     expose:
       - "8080"
       - "40000"
-\end{lstlisting}
+	\end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{Container Preparation}
-  VSCode configuration (file: \emph{launch.json}):
-\begin{lstlisting}[]
+	\frametitle{Container Preparation}
+	VSCode configuration (file: \emph{launch.json}):
+	\begin{lstlisting}[]
 {
     "version": "0.2.0",
     "configurations": [
@@ -188,70 +189,70 @@ services:
         }
     ]
 }
-\end{lstlisting}
+	\end{lstlisting}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Connecting}
-  Once the application has been launched (through
-  \emph{docker-compose}), there is a debugging server running inside
-  the container, exposed at the port chosen by the user (in our case
-  \emph{40000}).
-  \newline
-  \newline
-  \pause
-  Now there are two main scenarios of what can be done next:
-  \pause
-  \begin{itemize}
-  \item Connect through the CLI client
-    \pause
-  \item Connect from within VSCode
-  \end{itemize}
+	\frametitle{Connecting}
+	Once the application has been launched (through
+	\emph{docker-compose}), there is a debugging server running inside
+	the container, exposed at the port chosen by the user (in our case
+	\emph{40000}).
+	\newline
+	\newline
+	\pause
+	Now there are two main scenarios of what can be done next:
+	\pause
+	\begin{itemize}
+		\item Connect through the CLI client
+		      \pause
+		\item Connect from within VSCode
+	\end{itemize}
 \end{frame}
 
 \begin{frame}[fragile,fragile,fragile]
-  \frametitle{Connecting from CLI}
-  In order to connect using Delve's own client:
-\begin{verbatim}
+	\frametitle{Connecting from CLI}
+	In order to connect using Delve's own client:
+	\begin{verbatim}
 $ dlv connect --api-version 2 172.19.0.2:40000
-\end{verbatim}
-  \pause This will drop you into the debugger, directly connected to
-  the containerized process.
-  \pause
-  \newline
-  Due to source-relative offsets involved in debugging it might be easier to run \emph{dlv} from within the container in question:
-\begin{verbatim}
+	\end{verbatim}
+	\pause This will drop you into the debugger, directly connected to
+	the containerized process.
+	\pause
+	\newline
+	Due to source-relative offsets involved in debugging it might be easier to run \emph{dlv} from within the container in question:
+	\begin{verbatim}
 $ dlv connect --api-version 2 :40000
-\end{verbatim}
+	\end{verbatim}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Connecting from VSCode}
-  With the above configuration (\emph{launch.json}) you should be able
-  to directly connect to the debugging API.
-  \pause
-  \newline
-  \newline
-  Steps:
-  \pause
-  \begin{itemize}
-  \item Go to the \emph{Debug} window (\emph{Ctrl+Shift+D})
-    \pause
-  \item From the \emph{Debug} list select your config (in our case: \emph{Remote Docker})
-    \pause
-  \item After setting breakpoints and pressing \emph{Start Debugging} (or \emph{F5}) the debugging session will proceed
-  \end{itemize}
+	\frametitle{Connecting from VSCode}
+	With the above configuration (\emph{launch.json}) you should be able
+	to directly connect to the debugging API.
+	\pause
+	\newline
+	\newline
+	Steps:
+	\pause
+	\begin{itemize}
+		\item Go to the \emph{Debug} window (\emph{Ctrl+Shift+D})
+		      \pause
+		\item From the \emph{Debug} list select your config (in our case: \emph{Remote Docker})
+		      \pause
+		\item After setting breakpoints and pressing \emph{Start Debugging} (or \emph{F5}) the debugging session will proceed
+	\end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Further Reading}
-  Further reading:
-  \begin{itemize}
-  \item \emph{https://github.com/go-delve/delve} - official Delve documentation
-  \item \emph{https://www.jamessturtevant.com/posts/Using-the-Go-Delve-Debugger-from-the-command-line/} - article on CLI debugging with Delve
-  \item \emph{https://github.com/Microsoft/vscode-go/wiki/Debugging-Go-code-using-VS-Code} - official guide to debugging with Delve and VSCode
-  \item \emph{https://blog.jetbrains.com/go/2018/04/30/debugging-containerized-go-applications/} - same problem with GoLand
-  \end{itemize}
+	\frametitle{Further Reading}
+	Further reading:
+	\begin{itemize}
+		\item \emph{https://github.com/go-delve/delve} - official Delve documentation
+		\item \emph{https://www.jamessturtevant.com/posts/Using-the-Go-Delve-Debugger-from-the-command-line/} - article on CLI debugging with Delve
+		\item \emph{https://github.com/Microsoft/vscode-go/wiki/Debugging-Go-code-using-VS-Code} - official guide to debugging with Delve and VSCode
+		\item \emph{https://blog.jetbrains.com/go/2018/04/30/debugging-containerized-go-applications/} - same problem with GoLand
+	\end{itemize}
 \end{frame}
 
 % Test
