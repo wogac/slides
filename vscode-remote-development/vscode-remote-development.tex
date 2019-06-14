@@ -1,0 +1,77 @@
+\documentclass[pdf,xcolor=dvipsnames,noparindent]{beamer}
+\mode<presentation>{\usetheme{Warsaw}}
+
+% packages
+\usepackage{listings}
+% \usepackage{upquote}
+
+% \lstset{numbers=left, numberstyle=\footnotesize, stepnumber=1,firstnumber=1,
+%     numbersep=5pt,
+%     stringstyle=5pt,
+%     basicstyle=\footnotesize,
+%     keepspaces=true, tabsize=4,
+%     showstringspaces=false
+%     % backgroundcolor=\color{SpringGreen}
+% }
+
+% preamble
+\title{Remote Development with VSCode (SSH, Docker, WSL)}
+\author{Wojciech Gac}
+% \date{May 30, 2019}
+
+% document proper
+\begin{document}
+
+\begin{frame}
+	\titlepage
+\end{frame}
+
+% \begin{frame}{Outline}
+% 	\pause
+% 	\begin{itemize}
+% 		\item The Problem
+% 		      \pause
+% 		\item Delve Debugger
+% 		      \pause
+% 		\item Container Preparation
+% 		      \pause
+% 		\item Debugging
+% 		      \pause
+% 		\item Further Reading
+% 	\end{itemize}
+% \end{frame}
+
+% \begin{frame}
+% 	\frametitle{The Problem}
+% 	We'd like to be able to do the following:
+% 	\pause
+% 	\begin{itemize}
+% 		\item Using a local instance of VSCode...
+% 		      \pause
+% 		\item ...and a dockerized instance of a Go application...
+% 		      \pause
+% 		\item ...connect to a running process \emph{inside} the container...
+% 		      \pause
+% 		\item ...interrupt execution with breakpoints and modify variables on the fly
+% 	\end{itemize}
+	  
+% \end{frame}
+
+\begin{frame}{Outline}
+  \pause
+  \begin{itemize}
+  \item Remote Development, huh?
+    \pause
+  \item Preliminaries
+    \pause
+  \item Working over SSH
+    \pause
+  \item Working inside Docker containers
+    \pause
+  \item Working with WSL (Windows Subsystem for Linux)
+    \pause
+  \end{itemize}
+\end{frame}
+
+
+\end{document}
