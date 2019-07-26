@@ -5,30 +5,29 @@ import (
 	"time"
 
 	"github.com/fsnotify/fsnotify"
-
-	"github.com/spf13/viper"
+	v "github.com/spf13/viper"
 )
 
 func setDefaultConfiguration() {
-	viper.SetConfigType("yaml")
-	viper.SetDefault("timeout", 500)
-	viper.SetDefault("host", "localhost")
-	viper.SetDefault("port", 8080)
+	v.SetConfigType("yaml")
+	v.SetDefault("timeout", 500)
+	v.SetDefault("host", "localhost")
+	v.SetDefault("port", 8080)
 
-	viper.SetConfigName("config")
-	viper.AddConfigPath(".")
-	// viper.ReadInConfig()
+	v.SetConfigName("config")
+	v.AddConfigPath(".")
+	// v.ReadInConfig()
 }
 
 func writeConfig() {
-	viper.WriteConfigAs(".config")
+	v.WriteConfigAs(".config")
 }
 
 func extractConfigAndPrint() {
 	fmt.Printf("Timeout: %d s, Host: %s:%d\n",
-		viper.Get("timeout"),
-		viper.Get("host"),
-		viper.Get("port"))
+		v.Get("timeout"),
+		v.Get("host"),
+		v.Get("port"))
 }
 
 func main() {
@@ -38,8 +37,8 @@ func main() {
 	extractConfigAndPrint()
 
 	// Watching config for changes
-	viper.WatchConfig()
-	viper.OnConfigChange(func(e fsnotify.Event) {
+	v.WatchConfig()
+	v.OnConfigChange(func(e fsnotify.Event) {
 		fmt.Println("Configuration change detected:", e.Name)
 		fmt.Println("Redisplaying configuration summary...")
 		extractConfigAndPrint()

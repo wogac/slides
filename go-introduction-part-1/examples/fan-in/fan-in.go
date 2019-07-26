@@ -20,6 +20,7 @@ func createRandomChannel(msg string) <-chan string { // Returns receive-only cha
 func fanIn(input1, input2 <-chan string) <-chan string {
 	c := make(chan string)
 	go func() {
+
 		for {
 			select {
 			case s := <-input1:
@@ -34,7 +35,7 @@ func fanIn(input1, input2 <-chan string) <-chan string {
 
 func main() {
 	c := fanIn(createRandomChannel("abc"), createRandomChannel("def"))
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 100; i++ {
 		fmt.Println(<-c)
 	}
 }
