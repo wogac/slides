@@ -64,8 +64,6 @@
   \begin{itemize}
   \item Origins of Go
     \pause
-  \item Strong Points
-    \pause
   \item Language Basics
     \pause
   \item Concurrency Patterns
@@ -164,7 +162,102 @@
 \end{frame}
 
 \begin{frame}{Language Basics}
-  
+  \pause
+  Language attributes:
+  \begin{itemize}
+    \pause
+  \item Compiled to native code
+    \pause
+  \item Garbage collection
+    \pause
+  \item Statically typed
+    \pause
+  \item Syntax similar to C
+    \pause
+  \item Rich default toolchain
+    \pause
+  \item Official formatting style (enforced by the compiler)
+    \pause
+  \item Simplified model of OOP (structs, methods, interfaces)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Language Basics}
+  \pause
+  Variables:
+  \pause
+  \begin{itemize}
+  \item Variable declaration:
+    \begin{semiverbatim}
+      var <name> <type>
+    \end{semiverbatim}
+    \pause
+  \item Variable assignment:
+    \begin{semiverbatim}
+      <name> = <value>
+    \end{semiverbatim}
+    \pause
+  \item Combined declaration \& assignment:
+    \begin{semiverbatim}
+      var <name> <type> = <value>
+    \end{semiverbatim}
+    \pause
+  \item Short declaration with type inference (a'la C++ \texttt{auto}):
+    \begin{semiverbatim}
+      <name> := <value>
+    \end{semiverbatim}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Language Basics}
+  \pause
+  Basic data types:
+  \pause
+  \begin{itemize}
+    \begin{columns}
+      \column{0.4\textwidth}
+    \item \texttt{int}
+    \item \texttt{int8}
+    \item \texttt{int16}
+    \item \texttt{int32}
+    \item \texttt{int64}
+      \pause
+    \item \texttt{uint}
+    \item \texttt{uint8}
+    \item \texttt{uint16}
+    \item \texttt{uint32}
+    \item \texttt{uint64}
+    \item \texttt{uintptr}
+      \pause
+      \column{0.4\textwidth}
+    \item \texttt{bool}
+      \pause
+    \item \texttt{string}
+      \pause
+    \item \texttt{byte}
+    \item \texttt{rune}
+      \pause
+    \item \texttt{float32}
+    \item \texttt{float64}
+      \pause
+    \item \texttt{complex64}
+    \item \texttt{complex128}
+      \end{columns}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Language Basics}
+  \pause
+  Function definitions:
+  \pause
+  \begin{semiverbatim}
+    func <name>(<parameters>...) <return-types>... \{
+      // body... 
+      
+      // optional
+      return <return-value>
+    \}
+  \end{semiverbatim}
 \end{frame}
 
 \end{document}
